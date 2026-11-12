@@ -161,7 +161,7 @@ bottom = Math.max(bottom, ...rects.map(r => r.y1));
 const LEG = [['building now', D.lines.filter(isNow).map(l => [l.key, COL[l.key]])],
   ['side projects', D.lines.filter(l => !isNow(l)).map(l => [l.key, COL[l.key]])],
   ['past work', Object.entries(window.PALETTE.work.pinned)], ['past projects', [['', window.PALETTE.retired]]]].filter(g => g[1].length);
-const legend = el('g', {}, gLabels); let lx = 56, lrow = 0, li = 0;
+const legend = el('g', {}, gLabels); let lx = 96, lrow = 0, li = 0;
 // one row when it fits, otherwise two per row in columns
 for (const [name, sw] of LEG) { const g = el('g', {}, legend); let x = 0;
   for (const [k, c] of sw.slice(0, 3)) { bullet(g, x + 13, -12, 13, k, c); x += 32; }
@@ -169,10 +169,12 @@ for (const [name, sw] of LEG) { const g = el('g', {}, legend); let x = 0;
   const w = x + 6 + t.getComputedTextLength();
   g.dataset.w = w; li++; }
 const lg = [...legend.children], fits = lg.reduce((s, g) => s + +g.dataset.w + 44, 0) - 44 <= 1088;
-lg.forEach((g, i) => { if (fits) { g.setAttribute('transform', `translate(${lx} 0)`); lx += +g.dataset.w + 44; } else { lrow = Math.floor(i / 2); g.setAttribute('transform', `translate(${56 + (i % 2) * 520} ${lrow * 48})`); } });
+lg.forEach((g, i) => { if (fits) { g.setAttribute('transform', `translate(${lx} 0)`); lx += +g.dataset.w + 44; } else { lrow = Math.floor(i / 2); g.setAttribute('transform', `translate(${96 + (i % 2) * 500} ${lrow * 48})`); } });
 const H = Math.max(700, Math.ceil(bottom + 44)) + 56 + 22 + (lrow + 1) * 48;
 legend.setAttribute('transform', `translate(0 ${H - 34 - 56 - lrow * 48})`);
-{ const t = el('text', { x: 56, y: H - 34, 'font-size': 34, 'font-weight': 600, fill: DIM }, gLabels); t.textContent = 'line numbers count commits on every branch'; }
+{ const t = el('text', { x: 96, y: H - 34, 'font-size': 34, 'font-weight': 600, fill: DIM }, gLabels); t.textContent = 'line numbers count commits on every branch';
+  // the page's route starts here: a white trunk leaves the bottom of the map and runs on through every section below
+  const y0 = H - 34 - 56 - lrow * 48 - 12; el('line', { x1: ROUTE.full, x2: ROUTE.full, y1: y0, y2: H, stroke: WHITE, 'stroke-width': 15 }, gLabels); interchange(gLabels, ROUTE.full, y0); }
 stage.style.height = H + 'px'; svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 1200 ${H}`);
 
 // ---- water + notes ----

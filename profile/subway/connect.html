@@ -1,8 +1,8 @@
 <!doctype html><meta charset="utf8"><link rel="stylesheet" href="sign.css">
 <style>
 #stage{height:400px}
-h1{position:absolute;left:54px;top:56px;margin:0;font-size:132px;font-weight:800;letter-spacing:-.025em;line-height:1}
-p{position:absolute;left:58px;top:206px;width:1080px;margin:0;font-size:37px;line-height:1.32;font-weight:500}
+h1{position:absolute;left:92px;top:56px;margin:0;font-size:132px;font-weight:800;letter-spacing:-.025em;line-height:1}
+p{position:absolute;left:96px;top:206px;width:1010px;margin:0;font-size:37px;line-height:1.32;font-weight:500}
 </style>
 <div id="stage">
  <h1>last stop</h1>
@@ -12,19 +12,21 @@ p{position:absolute;left:58px;top:206px;width:1080px;margin:0;font-size:37px;lin
 <script src="colors.js"></script><script src="lib.js"></script>
 <script>
 // the closing sign: the line ends at a terminal, and a train pulls in and stops. the two link tags sit under it in the README.
-const svg = document.getElementById('s'), Y = 344, X1 = 1144;
-el('line', { x1: -20, x2: X1, y1: Y, y2: Y, stroke: WHITE, 'stroke-width': 15 }, svg);
+const svg = document.getElementById('s'), Y = 344, X1 = 1144, RX = ROUTE.full;
+// the route comes down from the sections above, turns, and ends at the terminal
+const d = rounded([{ x: RX, y: -10 }, { x: RX, y: Y }, { x: X1, y: Y }], 34);
+const line = el('path', { d, fill: 'none', stroke: WHITE, 'stroke-width': 15 }, svg), len = line.getTotalLength();
 el('line', { x1: X1, x2: X1, y1: Y - 22, y2: Y + 22, stroke: WHITE, 'stroke-width': 8 }, svg);
 const dot = el('circle', { cx: X1 - 34, cy: Y, r: 4.8, fill: INK }, svg);
-const train = el('line', { y1: Y, y2: Y, stroke: INK, 'stroke-width': 7, 'stroke-linecap': 'round' }, svg);
-arrowDisc(svg, 1118, 122, 30, 180);
-const T = 6000, STOP = X1 - 46, LEN = 64;
+const train = el('path', { d, fill: 'none', stroke: INK, 'stroke-width': 7, 'stroke-linecap': 'round' }, svg);
+el('circle', { cx: 1118, cy: 122, r: 30, fill: 'none', stroke: WHITE, 'stroke-width': 4.5 }, svg); el('path', { d: 'M1105 117 L1118 131 L1131 117', fill: 'none', stroke: WHITE, 'stroke-width': 5.5 }, svg);
+const T = 6000, STOP = len - 46, LEN = 64;
 window.__seek = ms => { const t = ((ms % T) + T) % T;
-  // parked on frame 0; it clears, then the next train rolls in and brakes to the same spot
+  // parked on frame 0; it clears, then the next train comes down the route, takes the bend and brakes to the same spot
   let head = STOP, op = 1;
   if (t >= 1300 && t < 1800) op = 1 - cl((t - 1300) / 350);
   if (t >= 1800) { const k = cl((t - 1800) / 2900); head = -40 + (STOP + 40) * (1 - Math.pow(1 - k, 3)); op = 1; }
-  train.setAttribute('x1', head - LEN); train.setAttribute('x2', head); train.style.opacity = op;
+  span(train, Math.max(0, head - LEN), Math.max(0.01, head), len); train.style.opacity = head > 0 ? op : 0;
   const arr = t >= 4700 ? oq(1 - cl((t - 4700) / 600)) : 0; dot.setAttribute('r', 4.8 * (1 + .8 * arr));
 };
 window.__seek(0);

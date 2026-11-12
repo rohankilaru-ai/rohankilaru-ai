@@ -9,8 +9,8 @@
 // a past-work stop (lane.html?key=<work key>): same stop, muted colour, the role where the year strip would be
 const WK = (window.DATA.work || []).find(w => w.key === Q.get('key'));
 if (WK) { const svg = document.getElementById('s'), c = colourOf(WK.color_key || WK.key, 'work'), tx = (s, a) => { const t = el('text', a, svg); t.textContent = s; };
-  el('line', { x1: 30, x2: 30, y1: 0, y2: 232, stroke: c, 'stroke-width': 15 }, svg);
-  el('circle', { cx: 30, cy: 116, r: 14.5, fill: WHITE }, svg); el('circle', { cx: 30, cy: 116, r: 5.2, fill: INK }, svg);
+  el('line', { x1: ROUTE.lane, x2: ROUTE.lane, y1: 0, y2: 232, stroke: c, 'stroke-width': 15 }, svg);
+  el('circle', { cx: ROUTE.lane, cy: 116, r: 14.5, fill: WHITE }, svg); el('circle', { cx: ROUTE.lane, cy: 116, r: 5.2, fill: INK }, svg);
   tx(WK.name.toLowerCase(), { x: 84, y: 96, 'font-size': 54, 'font-weight': 800, fill: WHITE, 'letter-spacing': '-.015em' });
   tx(WK.line, { x: 84, y: 154, 'font-size': 34, 'font-weight': 500, fill: WHITE, 'fill-opacity': .86 });
   tx(WK.role, { x: 84, y: 204, 'font-size': 34, 'font-weight': 600, fill: DIM });
@@ -20,8 +20,8 @@ const D = window.DATA, key = Q.get('key'), faded = D.retired.some(x => x.key ===
 // a retired project keeps the lane design, greyed: no line colour, no count, just when it last ran
 const c = faded ? window.PALETTE.retired : colours(D.lines)[l.key], INKED = faded ? '#b4b4ae' : WHITE, SOFT = faded ? '#7e7f7b' : DIM;
 const text = (s, a) => { const t = el('text', a, svg); t.textContent = s; return t; };
-el('line', { x1: 30, x2: 30, y1: 0, y2: 232, stroke: c, 'stroke-width': l.key === 'vel' && !faded ? 21 : 15 }, svg);
-el('circle', { cx: 30, cy: 116, r: 14.5, fill: faded ? '#b4b4ae' : WHITE }, svg); el('circle', { cx: 30, cy: 116, r: 5.2, fill: INK }, svg);
+el('line', { x1: ROUTE.lane, x2: ROUTE.lane, y1: 0, y2: 232, stroke: c, 'stroke-width': 15 }, svg);
+el('circle', { cx: ROUTE.lane, cy: 116, r: 14.5, fill: faded ? '#b4b4ae' : WHITE }, svg); el('circle', { cx: ROUTE.lane, cy: 116, r: 5.2, fill: INK }, svg);
 text(l.name, { x: 84, y: 96, 'font-size': 54, 'font-weight': 800, fill: INKED, 'letter-spacing': '-.015em' });
 const yr = l.last_year && l.last_year !== D.end_year ? ' ' + l.last_year : '';
 text(faded ? `last commit ${l.last_month}` : l.commits ? `${fmtN(l.commits)} commit${l.commits === 1 ? '' : 's'}, last ${l.last}${yr}` : `no commits this year, last ${l.last}${yr}`,

@@ -36,6 +36,12 @@ function rounded(pts, r = 24) {                       // polyline with arcs at t
   }
   const e = pts[pts.length - 1]; return s + ` L${e.x} ${e.y}`;
 }
+// THE ROUTE: one line runs down the left of the whole page. Measured in Chromium at an 830 px README, a summary image starts
+// 16.94 px in (the disclosure triangle), lanes are 94% wide and signs 95%, the map and the last-stop sign 100% with no triangle.
+// These stage x values (out of 1200) put the line at the same screen x, 36.4 px, in all of them.
+const ROUTE = { lane: 30, sign: 29.7, full: 52.7 };
+// an interchange on the route: white disc, ink ring, white core
+function interchange(p, x, y, r = 19) { el('circle', { cx: x, cy: y, r, fill: WHITE }, p); el('circle', { cx: x, cy: y, r: r * .66, fill: INK }, p); el('circle', { cx: x, cy: y, r: r * .34, fill: WHITE }, p); }
 // show the stretch [lo, hi] (px) of a path
 function span(e, lo, hi, len) { const v = Math.max(0, hi - lo); e.style.opacity = v > .5 ? 1 : 0; e.setAttribute('stroke-dasharray', `${Math.max(.01, v)} ${len + 99}`); e.setAttribute('stroke-dashoffset', -lo); }
 // the line bullet: a disc, or a diamond for the express (vel)

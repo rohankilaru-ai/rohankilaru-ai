@@ -6,7 +6,9 @@
 // a section sign: sign.html?t=building+now&keys=@now   keys = the lines that stop here, shown as bullets:
 // @now / @side take the map's tiers from data.js, or name keys directly. @work = the past-work stops. every sign ends in an outlined chevron: each one is the summary of a dropdown.
 const svg = document.getElementById('s'), C = colours(window.DATA.lines);
-const t = el('text', { x: 56, y: 118, 'font-size': 84, 'font-weight': 800, fill: WHITE, 'letter-spacing': '-.02em' }, svg); t.textContent = Q.get('t') || '';
+// the route passes through every section sign as a white trunk with an interchange
+el('line', { x1: ROUTE.sign, x2: ROUTE.sign, y1: 0, y2: 156, stroke: WHITE, 'stroke-width': 15 }, svg); interchange(svg, ROUTE.sign, 92);
+const t = el('text', { x: 84, y: 118, 'font-size': 84, 'font-weight': 800, fill: WHITE, 'letter-spacing': '-.02em' }, svg); t.textContent = Q.get('t') || '';
 let x = 1118;
 { el('circle', { cx: x, cy: 92, r: 26, fill: 'none', stroke: WHITE, 'stroke-width': 4 }, svg); el('path', { d: `M${x - 11} ${92 - 4} L${x} ${92 + 8} L${x + 11} ${92 - 4}`, fill: 'none', stroke: WHITE, 'stroke-width': 5 }, svg); }
 x -= 62;
