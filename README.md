@@ -11,7 +11,7 @@
 <details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/sign-building.png" width="95%" align="middle" alt="building now"></picture></summary>
 
 <a name="vel"></a>
-<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-vel.png" width="94%" align="middle" alt="VEL: ai tutor that draws on your screen. 2,303 commits this year, last 2026-11-11. Click to open."></picture></summary>
+<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-vel.png" width="94%" align="middle" alt="VEL: ai tutor that draws on your screen. 2,355 commits this year, last 2026-11-12. Click to open."></picture></summary>
 
 <img src="assets/subway/vel.webp" width="94%" alt="VEL: asked about a Calvin cycle page, it sends out mini agents that circle the diagram, the word rubisco and the lab data, then their notes land on the page">
 
