@@ -1,0 +1,12 @@
+<!doctype html><meta charset="utf8"><link rel="stylesheet" href="sign.css">
+<style>#stage{width:600px;height:176px}#stage::before{top:10px;height:5px}</style>
+<div id="stage"><svg id="s" width="600" height="176" viewBox="0 0 600 176"></svg></div>
+<script src="colors.js"></script><script src="lib.js"></script>
+<script>
+// one transfer in the row under "last stop": xfer.html?t=<label>. three sit side by side at 32% width each,
+// so it is a big label and an exit arrow, nothing smaller (it has to read at about 115 px wide on a phone).
+const svg = document.getElementById('s');
+arrowDisc(svg, 86, 98, 52, 45);
+const t = el('text', { x: 164, y: 128, 'font-size': 88, 'font-weight': 800, fill: WHITE, 'letter-spacing': '-.02em' }, svg); t.textContent = Q.get('t') || '';
+const w = t.getComputedTextLength(); if (w > 410) t.setAttribute('font-size', 88 * 410 / w);
+</script>

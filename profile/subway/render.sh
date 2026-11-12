@@ -19,6 +19,7 @@ one() {
     intro)    r intro.html "$OUT/intro.webp" 7 24 ;;
     linkedin) r linkedin.html "$OUT/linkedin.webp" 5 20 640 ;;
     connect)  r connect.html "$OUT/sign-connect.webp" 6 20
+              for n in linkedin x github; do r "xfer.html?t=$n" "$OUT/xfer-$n.png" 0 0 600; done
               r "tag.html?t=linkedin&u=in/rohankilaru" "$OUT/tag-linkedin.webp" 5 20 640
               r "tag.html?t=follow+on+github" "$OUT/tag-github.webp" 5 20 640
               r "tag.html?t=work+with+me" "$OUT/tag-collab.webp" 5 20 640

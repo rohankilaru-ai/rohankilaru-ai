@@ -118,6 +118,6 @@
 <!-- work:end -->
 
 <a name="connect"></a>
-<img src="assets/subway/sign-connect.webp" width="100%" alt="last stop: want to build something together? an internship, a project, a collab. transfer here.">
+<img src="assets/subway/sign-connect.webp" width="100%" alt="last stop: want to build something together? internships, projects, collabs. transfer here.">
 
-<a href="https://www.linkedin.com/in/rohankilaru/"><img src="assets/subway/tag-linkedin.webp" width="320" alt="LinkedIn: rohankilaru"></a> <a href="https://x.com/Roh_Kil"><img src="assets/subway/tag-x.webp" width="320" alt="X: @Roh_Kil"></a> <a href="https://github.com/rohankilaru-ai"><img src="assets/subway/tag-github.webp" width="320" alt="follow rohankilaru-ai on GitHub"></a>
+<a href="https://www.linkedin.com/in/rohankilaru/"><img src="assets/subway/xfer-linkedin.png" width="32%" alt="LinkedIn: rohankilaru"></a> <a href="https://x.com/Roh_Kil"><img src="assets/subway/xfer-x.png" width="32%" alt="X: @Roh_Kil"></a> <a href="https://github.com/rohankilaru-ai"><img src="assets/subway/xfer-github.png" width="32%" alt="follow rohankilaru-ai on GitHub"></a>
