@@ -1,0 +1,125 @@
+{
+ "_about": "Lines on the subway map. The map shows your most active projects (max_lines), ranked by commits in the last active_days; when a newer project passes one, the weakest drops off. Projects with a film open under 'building now' right under the map; others are 'side projects'. Listed projects that drop off are shown faded under 'past projects' and still open their cards. Any PUBLIC repo you commit to can earn a line on its own; a PRIVATE repo only shows once its full name is in private_allow. Repos in hide never show; repos in ignore are never even fetched.",
+ "projects": [
+  {
+   "key": "vel",
+   "name": "VEL",
+   "repo": "rohankilaru-ai/vel",
+   "line": "ai tutor that draws on your screen",
+   "link": "film",
+   "film": {
+    "src": "assets/subway/vel.webp",
+    "alt": "VEL: asked about a Calvin cycle page, it sends out mini agents that circle the diagram, the word rubisco and the lab data, then their notes land on the page",
+    "note": "**VEL** is private and mid-rebuild, so its clip is the prototype from its design boards."
+   }
+  },
+  {
+   "key": "lea",
+   "name": "LEA",
+   "repo": "SritejBommaraju/lea",
+   "line": "phone scan to a repair guide",
+   "link": "film",
+   "film": {
+    "src": "assets/subway/lea.webp",
+    "alt": "LEA: an iPhone LiDAR scan of an Arduino becomes a 3D model, and Lea circles the bent pin header",
+    "note": "**[LEA](https://github.com/SritejBommaraju/lea)** shipped at cal hacks ([devpost](https://devpost.com/software/lea-lidar-enabled-assistant)), built with [@SritejBommaraju](https://github.com/SritejBommaraju), [@samikthusoo29](https://github.com/samikthusoo29) and [@jynlee7](https://github.com/jynlee7).",
+    "star": true
+   }
+  },
+  {
+   "key": "jobradar-ai",
+   "name": "JobRadar",
+   "repo": "rohankilaru-ai/jobradar-ai",
+   "line": "internship alerts, 24/7",
+   "link": "card"
+  },
+  {
+   "key": "dailygames-slackbot",
+   "name": "SportsGrid",
+   "repo": "rohankilaru-ai/dailygames-slackbot",
+   "line": "daily puzzles + leaderboards in slack",
+   "link": "card"
+  },
+  {
+   "key": "neetcode-submissions",
+   "name": "NeetCode",
+   "repo": "rohankilaru-ai/neetcode-submissions",
+   "line": "interview reps",
+   "link": "card"
+  },
+  {
+   "key": "evision",
+   "name": "EVision",
+   "repo": "rohankilaru-ai/EVision",
+   "line": "kalshi vs sportsbook, web app",
+   "link": "card"
+  },
+  {
+   "key": "kalshi-ev-extension",
+   "name": "Kalshi EV",
+   "repo": "rohankilaru-ai/Kalshi-EV-Extension",
+   "line": "kalshi vs sportsbook, in chrome",
+   "link": "card"
+  },
+  {
+   "key": "rohan_drone_club",
+   "name": "Drone Stitcher",
+   "repo": "rohankilaru-ai/rohan_drone_club",
+   "line": "drone video into one panorama",
+   "link": "card"
+  }
+ ],
+ "private_allow": [
+  "rohankilaru-ai/vel"
+ ],
+ "ignore": [
+  "rohankilaru-ai/rohankilaru-ai"
+ ],
+ "max_lines": 5,
+ "active_days": 120,
+ "hide": [
+  "rohankilaru-ai/neetcode-submissions"
+ ],
+ "work": [
+  {
+   "key": "climate-plans",
+   "name": "climate plans",
+   "line": "uc berkeley coolclimate network",
+   "role": "software development intern, jan to may 2026",
+   "color_key": "climate-plans",
+   "body": [
+    {
+     "img": "assets/subway/cp-equity.webp",
+     "alt": "Climate Equity Index on climateplans.org: Berkeley's burdens and benefits open into their indicators"
+    },
+    {
+     "img": "assets/subway/cp-before-after.webp",
+     "alt": "Law Impact Explorer, before and after: pick a Berkeley law and compare the metrics before and after it took effect"
+    },
+    {
+     "img": "assets/subway/cp-similar.webp",
+     "alt": "Law Impact Explorer, similar laws: open Berkeley's waste code and get the closest policies from other cities to compare"
+    },
+    {
+     "text": "**[climate plans](https://climateplans.org)** (uc berkeley coolclimate network): i worked on the climate equity index and built the law impact explorer, which takes any of 1,100+ california laws and shows what changed after it passed and which laws are most like it."
+    }
+   ]
+  },
+  {
+   "key": "ariento",
+   "name": "ariento",
+   "line": "backend behind their crm",
+   "role": "software engineer intern, summer 2026",
+   "color_key": "ariento",
+   "body": [
+    {
+     "img": "assets/subway/ariento.webp",
+     "alt": "Ariento CRM backend: Angular frontend, Django REST API and Cloud Tasks keeping outside services in sync"
+    },
+    {
+     "text": "**ariento**: built the backend behind their CRM."
+    }
+   ]
+  }
+ ]
+}

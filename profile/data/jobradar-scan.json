@@ -1,0 +1,40 @@
+{
+ "scanned": "2026-11-11",
+ "listings": 835,
+ "priority": 9,
+ "alerts": [
+  {
+   "company": "NVIDIA",
+   "title": "AI Systems Software Engineering Intern \u2013 Summer 2027",
+   "location": "Austin, TX",
+   "source": "aprameyak-2027",
+   "time": "22:16",
+   "priority": true
+  },
+  {
+   "company": "Palantir",
+   "title": "Software Engineer, Intern - Connectivity Platform and Product",
+   "location": "New York, NY",
+   "source": "aprameyak-2027",
+   "time": "22:16",
+   "priority": true
+  },
+  {
+   "company": "Metamorphic",
+   "title": "Research and Engineering Intern (Summer 2027)",
+   "location": "Palo Alto, CA",
+   "source": "aprameyak-2027",
+   "time": "22:16",
+   "priority": true
+  },
+  {
+   "company": "NVIDIA",
+   "title": "AI Compiler and Kernel Intern \u2013 Summer 2027",
+   "location": "Austin, TX",
+   "source": "aprameyak-2027",
+   "time": "22:16",
+   "priority": true
+  }
+ ],
+ "_note": "alerts picked from the 9 the scan flagged [PRIORITY] (company on config/companies.yaml priority list)"
+}

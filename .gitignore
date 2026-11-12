@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+assets/subway/log.*
+assets/subway/lane-*.png

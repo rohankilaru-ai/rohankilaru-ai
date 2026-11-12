@@ -1,0 +1,256 @@
+<!doctype html><meta charset="utf8"><link rel="stylesheet" href="sign.css">
+<style>
+h1{position:absolute;left:56px;top:54px;margin:0;font-size:84px;font-weight:800;letter-spacing:-.02em;line-height:1;z-index:2}
+.sub{position:absolute;left:58px;top:148px;font-size:36px;font-weight:500;letter-spacing:-.005em;z-index:2}
+.sub b{font-weight:800}
+.yr{position:absolute;right:56px;top:82px;font-size:34px;font-weight:600;color:var(--dim);z-index:2}
+</style>
+<div id="stage">
+ <h1>practice log</h1><div class="yr" id="yr"></div><div class="sub" id="sub"></div>
+ <svg id="map" width="1200" height="900"></svg>
+</div>
+<script src="colors.js"></script><script src="lib.js"></script>
+<script src="data.js"></script>
+<script>
+// The year as a transit diagram. Everything here is laid out from data.js: any number of lines, no per-project positions.
+//  - a week in which any project has a commit is one column; columns are evenly spaced (a diagram, not a calendar)
+//  - the longest empty stretch (12+ weeks) is water, crossed at 45 degrees
+//  - lines stack in the order they started; when one ends, the lines under it jog up a lane
+//  - a new line enters from below on a 45-degree lead; its name sits at the foot of the lead
+//  - labels are placed by trying candidates against everything already drawn; the fallback is a list at the bottom
+const D = window.DATA, svg = document.getElementById('map'), COL = colours(D.lines);
+yr.textContent = `${D.from} to ${D.to}`;
+sub.innerHTML = `<b>${fmtN(D.total)}</b> contributions, <b>${fmtN(D.private)}</b> of them in private repos`;
+
+const n = D.columns.length, W = 15, LANE = 24, K = Math.SQRT2 - 1, D45 = Math.SQRT1_2;
+const gap = D.gaps.filter(g => g.weeks >= 12 && g.after < n - 1).sort((a, b) => b.weeks - a.weeks)[0];
+const nL = gap ? gap.after + 1 : 0, DROP = gap ? 170 : 0;
+const multi = D.lines.filter(l => l.stops.length > 1 || (l.stops.length === 1 && l.running));
+const single = D.lines.filter(l => l.stops.length === 1 && !l.running), closed = D.lines.filter(l => !l.stops.length);
+// rank of every multi-stop line at every column it spans
+for (const l of multi) { l.c0 = l.stops[0].col; l.c1 = l.running ? n - 1 : l.stops[l.stops.length - 1].col; l.rank = {}; }
+const order = [...multi].sort((a, b) => a.c0 - b.c0 || b.commits - a.commits || (a.key < b.key ? -1 : 1));
+let maxRankL = 0, maxRank = 0;
+for (let c = 0; c < n; c++) { let r = 0; for (const l of order) if (l.c0 <= c && c <= l.c1) { l.rank[c] = r++; } maxRank = Math.max(maxRank, r - 1); if (c < nL) maxRankL = Math.max(maxRankL, r - 1); }
+const X0 = 96, X1 = 1126, CROSS = gap ? 44 + DROP + 34 + maxRankL * LANE * .4 : 0;
+const step = Math.min(96, (X1 - X0 - CROSS) / Math.max(1, n - 1 - (gap ? 1 : 0)));
+const YL = gap ? 372 : 430, YR = YL + DROP;
+const P1 = gap ? { x: X0 + step * (nL - 1) + 44 + maxRankL * LANE * .4, y: YL } : null, P2 = gap ? { x: P1.x + DROP, y: YR } : null;
+const XR0 = gap ? P2.x + 34 : X0;
+const colX = i => i < nL ? X0 + step * i : XR0 + step * (i - nL), colY = i => i < nL ? YL : YR;
+const XEND = Math.min(1210, colX(n - 1) + 90 > 1150 ? 1210 : colX(n - 1) + 70);
+
+const gGround = el('g', {}, svg), gLines = el('g', {}, svg), gTrains = el('g', {}, svg), gStops = el('g', {}, svg), gLabels = el('g', {}, svg);
+// ---- obstacles for placement ----
+const circles = [], rects = [];                       // {x,y,r,own}  {x0,y0,x1,y1}
+const hitRect = (R, own) => R.x0 < 44 || R.x1 > 1156 || R.y0 < 206 ||
+  rects.some(q => R.x0 < q.x1 && R.x1 > q.x0 && R.y0 < q.y1 && R.y1 > q.y0) ||
+  circles.some(c => c.own !== own && Math.hypot(c.x - cl(c.x, R.x0, R.x1), c.y - cl(c.y, R.y0, R.y1)) < c.r);
+const hitPts = (pts, r, own) => pts.some(p => p.x < 30 || circles.some(c => c.own !== own && Math.hypot(c.x - p.x, c.y - p.y) < c.r + r) ||
+  rects.some(q => p.x > q.x0 - r && p.x < q.x1 + r && p.y > q.y0 - r && p.y < q.y1 + r));
+const sample = (a, b, stepPx = 6) => { const L = Math.hypot(b.x - a.x, b.y - a.y), out = []; for (let s = 0; s <= L; s += stepPx) out.push({ x: a.x + (b.x - a.x) * s / L, y: a.y + (b.y - a.y) * s / L }); out.push(b); return out; };
+const addPath = (pts, own, r = W / 2 + 5) => { for (let i = 1; i < pts.length; i++) for (const p of sample(pts[i - 1], pts[i])) circles.push({ x: p.x, y: p.y, r, own }); };
+
+// ---- months: a small label over the first column of each month ----
+// every month that has a station gets its name; when two would touch, the second sits on a higher row
+let lastMonthX = -999, lastRow = 0; const monthTop = {};
+D.columns.forEach((c, i) => {
+  if (!c.month) return;
+  const x = colX(i), y = colY(i), row = x - lastMonthX < 84 && lastRow === 0 ? 1 : 0; lastMonthX = x; lastRow = row;
+  const ty = y - 46 - row * 40;
+  el('line', { x1: x, x2: x, y1: ty + 10, y2: y - 20, stroke: WHITE, 'stroke-opacity': .3, 'stroke-width': 2 }, gGround);
+  const t = el('text', { x, y: ty, 'font-size': 34, 'font-weight': 600, fill: DIM, 'text-anchor': 'middle' }, gGround); t.textContent = c.month;
+  rects.push({ x0: x - 38, x1: x + 38, y0: ty - 32, y1: y - 18 }); monthTop[i] = ty - 34;
+});
+
+// ---- line bodies ----
+const lines = [];
+for (const l of order) {
+  const pts = [], y = c => colY(c) + l.rank[c] * LANE;
+  pts.push({ x: colX(l.c0), y: y(l.c0) });
+  for (let c = l.c0; c < l.c1; c++) {
+    const dA = l.rank[c] * LANE, dB = l.rank[c + 1] * LANE;
+    if (gap && c === nL - 1) {
+      if (dA !== dB) { const j = Math.min(Math.abs(dB - dA), 28); pts.push({ x: colX(c) + 9, y: YL + dA }, { x: colX(c) + 9 + j, y: YL + dB }); }
+      pts.push({ x: P1.x - K * dB, y: YL + dB }, { x: P2.x - K * dB, y: YR + dB });
+    } else if (dA !== dB) {
+      const j = Math.min(Math.abs(dB - dA), Math.max(6, step - 26)), xa = colX(c) + Math.min(10, (step - j) / 2);   // jog right after the column, so a line entering at the next one has room
+      pts.push({ x: xa, y: y(c) }, { x: xa + j, y: y(c + 1) });
+    }
+  }
+  const e = { x: colX(l.c1), y: y(l.c1) };
+  pts.push(l.running ? { x: XEND, y: e.y } : { x: e.x + 11, y: e.y });
+  const o = { l, pts, colour: COL[l.key], w: l.key === 'vel' ? 21 : W, sx: colX(l.c0), sy: y(l.c0), ex: e.x, ey: e.y, y };
+  addPath(pts, l.key); lines.push(o);
+}
+// one-stop lines: a 45-degree crosstown stub through their column
+for (const l of single) {
+  const c = l.stops[0].col, x = colX(c), yy = colY(c), h = Math.min(30, Math.max(18, step * .56));
+  // slide down past any lane already running through this column
+  let y0 = yy; const busy = lines.filter(o => o.l.c0 <= c && c <= o.l.c1); if (busy.length) y0 = yy + (Math.max(...busy.map(o => o.l.rank[c])) + 1) * LANE + h + 6;
+  const pts = [{ x: x - h, y: y0 - h }, { x: x + h, y: y0 + h }];
+  const o = { l, pts, colour: COL[l.key], w: W, stub: true, sx: x, sy: y0, h };
+  addPath(pts, l.key); lines.push(o);
+}
+
+// ---- leads + labels ----
+function labelFor(o) {                                // builds the label group at 0,0 and measures it
+  const l = o.l, big = l.key === 'vel', fs = big ? 46 : 36, g = el('g', {}, gLabels), r = fs * .36;
+  bullet(g, r, -fs * .34, r, l.key, o.colour);
+  const t = el('text', { x: r * 2 + 12, y: 0, 'font-size': fs, 'font-weight': 800, fill: WHITE, 'letter-spacing': '-.01em' }, g);
+  t.textContent = l.name;
+  const c = el('tspan', { 'font-weight': 500, fill: DIM, dx: 10 }, t);
+  c.textContent = l.stops.length ? fmtN(l.commits) : `last ran ${l.last}${l.last_year && l.last_year !== D.end_year ? ' ' + l.last_year : ''}`;
+  o.label = g; o.lw = r * 2 + 12 + t.getComputedTextLength(); o.lh = fs; return o;
+}
+const place = (o, x, yBase) => { o.lx = x; o.ly = yBase; o.label.setAttribute('transform', `translate(${x} ${yBase})`); rects.push({ x0: x - 8, x1: x + o.lw + 8, y0: yBase - o.lh - 4, y1: yBase + 12 }); };
+const tryLabel = (o, cands) => { for (const [x, yBase] of cands) { const R = { x0: x - 8, x1: x + o.lw + 8, y0: yBase - o.lh - 4, y1: yBase + 12 }; if (!hitRect(R, o.l.key)) { place(o, x, yBase); return true; } } return false; };
+// nearest free spot around an anchor: a ring search, closest first
+function nearest(o, ax, ay, maxD = 230) {
+  const c = [];
+  for (let dy = -maxD; dy <= maxD; dy += 12) for (let dx = -o.lw - 40; dx <= 60; dx += 16) {
+    const x = ax + dx, yb = ay + dy, d = Math.hypot(ax - cl(ax, x, x + o.lw), ay - cl(ay, yb - o.lh, yb));
+    if (d >= 16 && d <= maxD) c.push([d + (dx < -o.lw / 2 ? 14 : 0), x, yb]);
+  }
+  c.sort((p, q) => p[0] - q[0]);
+  return tryLabel(o, c.map(v => [v[1], v[2]]));
+}
+const pending = [], byCommits = [...lines].sort((a, b) => b.l.commits - a.l.commits), plain = [];
+for (const o of byCommits) labelFor(o);
+// pass 1: leads. a line that is the lowest lane where it starts may enter on a 45-degree lead from below, name at its foot
+for (const o of byCommits.filter(o => !o.stub)) {
+  const key = o.l.key, c0 = o.l.c0, lowest = !lines.some(q => !q.stub && q !== o && q.l.c0 <= c0 && c0 <= q.l.c1 && q.l.rank[c0] > o.l.rank[c0]);
+  let done = false;
+  if (lowest) for (const len of [150, 110, 190, 80, 230, 270]) {
+    const foot = { x: o.sx - 8, y: o.sy }, T = { x: foot.x - len * D45, y: foot.y + len * D45 };
+    if (T.x < 60 || hitPts(sample(T, foot).slice(0, -6), W / 2 + 4, key)) continue;
+    if (tryLabel(o, [[T.x - o.lw / 2, T.y + 26 + o.lh], [T.x - o.lw - 24, T.y + o.lh * .36], [T.x - 20, T.y + 26 + o.lh], [T.x - o.lw + 20, T.y + 26 + o.lh]])) {
+      o.pts.unshift(T, foot); o.lead = true; addPath([T, foot], key); done = true; break; }
+  }
+  if (!done) { o.pts[0] = { x: o.sx - 11, y: o.sy }; plain.push(o); }
+}
+// pass 2: one-stop stubs, name under the stub when there is room
+for (const o of byCommits.filter(o => o.stub)) {
+  const a = o.pts[0], b = o.pts[1];
+  if (!tryLabel(o, [[b.x - 44, b.y + 58], [b.x - 44, b.y + 100], [b.x - 44, b.y + 142], [a.x - 14, a.y - 22], [b.x + 20, b.y + 8]]) && !nearest(o, b.x, b.y) && !nearest(o, a.x, a.y)) pending.push(o);
+}
+// pass 3: lines that start without a lead
+for (const o of plain) {
+  const c = [[o.sx - 22, o.sy - 30]];
+  for (const s of o.l.stops.slice(1, 4)) c.push([colX(s.col) - 22, o.y(s.col) - 30]);
+  c.push([o.sx - 22, o.sy + 30 + o.lh], [o.ex + 30, o.ey + o.lh * .36], [o.sx - o.lw - 30, o.sy + o.lh * .36]);
+  if (!tryLabel(o, c) && !nearest(o, o.sx + 30, o.sy) && !nearest(o, o.ex, o.ey)) pending.push(o);
+}
+// lines with no commits in the window: closed stubs coming in from the left edge
+let cy = Math.max(YL + 190, 520);
+for (const l of closed) {
+  const o = labelFor({ l, colour: COL[l.key], w: W, closed: true });
+  for (let k = 0; k < 12; k++, cy += 40) {
+    const pts = [{ x: 0, y: cy }, { x: 118, y: cy }];
+    if (hitPts(sample({ x: 40, y: cy }, pts[1]), 16, l.key)) continue;
+    if (tryLabel(o, [[56, cy + 28 + o.lh]])) { o.pts = pts; addPath(pts, l.key); lines.push(o); cy += 110; break; }
+  }
+  if (!o.pts) { o.pts = [{ x: 0, y: -40 }, { x: 10, y: -40 }]; lines.push(o); pending.push(o); }
+}
+// anything that found no room goes in a list under the map
+let bottom = Math.max(...circles.map(c => c.y + c.r), ...rects.map(r => r.y1));
+pending.forEach((o, i) => { const x = 56 + (i % 3) * 370, y = bottom + 56 + Math.floor(i / 3) * 46; place(o, x, y); });
+bottom = Math.max(bottom, ...rects.map(r => r.y1));
+// the header counts github's contribution calendar (default branches); the lines count commits on every branch
+// the colouring guide as a legend: swatches are the real colours in use, from colors.js
+const LEG = [['building now', D.lines.filter(isNow).map(l => [l.key, COL[l.key]])],
+  ['side projects', D.lines.filter(l => !isNow(l)).map(l => [l.key, COL[l.key]])],
+  ['past work', Object.entries(window.PALETTE.work.pinned)], ['past projects', [['', window.PALETTE.retired]]]].filter(g => g[1].length);
+const legend = el('g', {}, gLabels); let lx = 56, lrow = 0, li = 0;
+// one row when it fits, otherwise two per row in columns
+for (const [name, sw] of LEG) { const g = el('g', {}, legend); let x = 0;
+  for (const [k, c] of sw.slice(0, 3)) { bullet(g, x + 13, -12, 13, k, c); x += 32; }
+  const t = el('text', { x: x + 6, y: 0, 'font-size': 34, 'font-weight': 600, fill: DIM }, g); t.textContent = name;
+  const w = x + 6 + t.getComputedTextLength();
+  g.dataset.w = w; li++; }
+const lg = [...legend.children], fits = lg.reduce((s, g) => s + +g.dataset.w + 44, 0) - 44 <= 1088;
+lg.forEach((g, i) => { if (fits) { g.setAttribute('transform', `translate(${lx} 0)`); lx += +g.dataset.w + 44; } else { lrow = Math.floor(i / 2); g.setAttribute('transform', `translate(${56 + (i % 2) * 520} ${lrow * 48})`); } });
+const H = Math.max(700, Math.ceil(bottom + 44)) + 56 + 22 + (lrow + 1) * 48;
+legend.setAttribute('transform', `translate(0 ${H - 34 - 56 - lrow * 48})`);
+{ const t = el('text', { x: 56, y: H - 34, 'font-size': 34, 'font-weight': 600, fill: DIM }, gLabels); t.textContent = 'line numbers count commits on every branch'; }
+stage.style.height = H + 'px'; svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 1200 ${H}`);
+
+// ---- water + notes ----
+if (gap) {
+  const m = { x: (P1.x + P2.x) / 2 - K * maxRankL * LANE / 2, y: (P1.y + P2.y) / 2 + maxRankL * LANE / 2 }, hw = 52, L = 1400;
+  el('rect', { x: 0, y: 214, width: 1200, height: H - 214 }, el('clipPath', { id: 'mapclip' }, gGround));
+  el('polygon', { points: [[m.x - L - hw, m.y + L - hw], [m.x + L - hw, m.y - L - hw], [m.x + L + hw, m.y - L + hw], [m.x - L + hw, m.y + L + hw]].map(p => p.join(',')).join(' '), fill: '#172430', 'clip-path': 'url(#mapclip)' }, gGround);
+  const t = el('text', { 'font-size': 34, 'font-weight': 600, fill: '#7f9bb3' }, gGround); t.textContent = `these lines quiet ${gap.from} to ${gap.to}`;
+  const w = t.getComputedTextLength(); let ok = false;
+  for (const yy of [262, 304, 346, H - 40, H - 84]) { const x = Math.min(1144 - w, m.x + (m.y - yy) + hw + 26); const R = { x0: x - 6, x1: x + w + 6, y0: yy - 36, y1: yy + 12 };
+    if (x > 50 && !hitRect(R)) { t.setAttribute('x', x); t.setAttribute('y', yy); rects.push(R); ok = true; break; } }
+  if (!ok) t.remove();
+}
+{ // busiest week, noted over its column when there is room
+  const i = D.columns.findIndex(c => c.date === D.busiest.date);
+  if (i >= 0) { const x = colX(i), yTop = monthTop[i] !== undefined ? monthTop[i] : colY(i) - 30;
+    const t = el('text', { 'font-size': 34, 'font-weight': 600, fill: DIM }, gGround); t.textContent = `busiest week, ${fmtN(D.busiest.n)} contributions`;
+    const w = t.getComputedTextLength(); let ok = false;
+    for (const yy of [yTop - 34, yTop - 76, yTop - 118]) for (const tx of [Math.min(1144 - w, x - w / 2), x - w + 20, x - 20]) { if (ok) break;
+      const R = { x0: tx - 6, x1: tx + w + 6, y0: yy - 36, y1: yy + 12 };
+      if (tx > 50 && !hitRect(R)) { t.setAttribute('x', tx); t.setAttribute('y', yy); rects.push(R); ok = true;
+        el('line', { x1: x, x2: x, y1: yy + 16, y2: yTop + (monthTop[i] !== undefined ? -2 : 10), stroke: WHITE, 'stroke-opacity': .3, 'stroke-width': 2 }, gGround); } }
+    if (!ok) t.remove(); }
+}
+
+// ---- draw ----
+for (const o of lines) {
+  const k = o.colour;
+  o.path = el('path', { d: rounded(o.pts), fill: 'none', stroke: k, 'stroke-width': o.w, 'stroke-linejoin': 'round' }, gLines);
+  o.len = o.path.getTotalLength(); o.x0 = o.pts[0].x; o.x1 = o.pts[o.pts.length - 1].x;
+  if (o.closed) { o.dash = el('path', { d: rounded(o.pts), fill: 'none', stroke: INK, 'stroke-width': o.w + 2, 'stroke-dasharray': '9 14' }, gLines); }
+  const bar = at => { const p = o.path.getPointAtLength(at ? o.len : 0), q = o.path.getPointAtLength(at ? o.len - 2 : 2), a = Math.atan2(q.y - p.y, q.x - p.x) + Math.PI / 2;
+    return { at, e: el('line', { x1: p.x - Math.cos(a) * 13, y1: p.y - Math.sin(a) * 13, x2: p.x + Math.cos(a) * 13, y2: p.y + Math.sin(a) * 13, stroke: k, 'stroke-width': 6 }, gLines) }; };
+  o.bars = []; if (o.stub) o.bars.push(bar(0), bar(1)); if (o.lead) o.bars.push(bar(0)); if (o.closed) o.bars.push(bar(1));
+  o.stops = [];
+  for (const st of (o.l.stops || [])) {
+    const p = o.stub ? { x: o.sx, y: o.sy } : { x: colX(st.col), y: o.y(st.col) };
+    let best = 0, bd = 1e9; for (let s = 0; s <= o.len; s += 1.5) { const q = o.path.getPointAtLength(s), dd = (q.x - p.x) ** 2 + (q.y - p.y) ** 2; if (dd < bd) { bd = dd; best = s; } }
+    o.stops.push({ at: best, p, col: st.col, e: el('circle', { cx: p.x, cy: p.y, r: 4.6, fill: INK }, gStops) });
+  }
+  o.trains = [];
+  const nT = o.closed ? 0 : o.l.key === 'vel' ? 3 : o.len > 500 ? 2 : 1;
+  for (let i = 0; i < nT; i++) o.trains.push(el('path', { d: o.path.getAttribute('d'), fill: 'none', stroke: WHITE, 'stroke-width': 7, 'stroke-linecap': 'round' }, gTrains));
+}
+// transfers: a column where two or more lines stop gets a white connector
+const byCol = {}; lines.forEach(o => !o.stub && !o.closed && o.stops.forEach(s => (byCol[s.col] ||= []).push(s)));
+const transfers = [], PW = Math.max(9, Math.min(15, step - 7));
+for (const c in byCol) { const s = byCol[c]; if (s.length < 2) continue;
+  transfers.push({ e: el('line', { x1: s[0].p.x, x2: s[0].p.x, y1: 0, y2: 0, stroke: WHITE, 'stroke-width': PW, 'stroke-linecap': 'round' }, gLines), s }); }
+
+// ---- time: trains run, the map retracts toward the present, then draws itself in along the year ----
+const T = 8000, RUN = 5600, OUT0 = 5650, OUT1 = 6250, IN0 = 6350, IN1 = 7900, SPEED = .30;
+lines.forEach((o, i) => { o.dep = o.trains.map((_, j) => 250 + (i * 370) % 1500 + j * (o.l.key === 'vel' ? 1150 : 2300)); o.tlen = o.l.key === 'vel' ? 44 : 30; });
+window.__seek = ms => {
+  const t = ((ms % T) + T) % T;
+  const erasing = t >= OUT0 && t < IN0 - 1, drawing = t >= IN0 - 1;
+  const sx = erasing ? -60 + io(cl((t - OUT0) / (OUT1 - OUT0))) * 1400 : drawing ? -60 + io(cl((t - IN0) / (IN1 - IN0))) * 1340 : 0;
+  for (const o of lines) {
+    const f = cl((sx - o.x0) / Math.max(20, o.x1 - o.x0));
+    let a = 0, b = 1; if (erasing) a = f; if (drawing) b = f;
+    const vis = (b - a) * o.len;
+    span(o.path, a * o.len, b * o.len, o.len); if (o.dash) o.dash.style.opacity = vis > .5 ? 1 : 0;
+    for (const br of o.bars) br.e.style.opacity = (br.at >= a - 1e-6 && br.at <= b + 1e-6 && vis > .5) ? 1 : 0;
+    for (const s of o.stops) {
+      const fr = s.at / o.len; let sc = (fr >= a - 1e-6 && fr <= b + 1e-6 && vis > .5) ? 1 : 0;
+      if (drawing && sc) sc = back(cl((b - fr) * o.len / 40));
+      let ring = 0; if (t < RUN) o.trains.forEach((_, j) => { const dt = ((t - o.dep[j]) * SPEED - s.at) / SPEED; if (dt > 0 && dt < 420) ring = Math.max(ring, 1 - dt / 420); });
+      s.sc = sc; s.ring = ring; s.e.setAttribute('r', 4.6 * sc * (1 + .75 * (ring > 0 ? oq(ring) : 0)));
+    }
+    let op = 1, dy = 0; if (erasing) op = 1 - cl(a * 3); if (drawing) { op = cl(b * 5); dy = (1 - oq(cl(b * 3))) * 10; }
+    o.label.style.opacity = op; o.label.setAttribute('transform', `translate(${o.lx} ${o.ly + dy})`);
+    o.trains.forEach((e, j) => { const head = (t - o.dep[j]) * SPEED, tail = head - o.tlen;
+      if (!(t < RUN + 400 && head > 0 && tail < o.len)) { e.style.opacity = 0; return; }
+      span(e, Math.max(tail, 0), Math.min(head, o.len), o.len); });
+  }
+  for (const tr of transfers) { const live = tr.s.filter(s => s.sc > .02), ys = live.map(s => s.p.y);
+    tr.e.style.opacity = live.length ? 1 : 0; if (live.length) { tr.e.setAttribute('y1', Math.min(...ys)); tr.e.setAttribute('y2', Math.max(...ys)); }
+    const rg = Math.max(0, ...tr.s.map(s => s.ring)); tr.e.setAttribute('stroke-width', PW + (rg > 0 ? 5 * oq(rg) : 0)); }
+};
+window.__seek(0);
+</script>

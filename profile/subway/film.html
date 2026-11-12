@@ -1,0 +1,79 @@
+<!doctype html><meta charset="utf8"><link rel="stylesheet" href="sign.css">
+<style>
+#stage{padding:54px 56px 44px;box-sizing:border-box}
+.kick{font-size:34px;font-weight:600;color:var(--dim);margin:6px 0 2px}
+.head{display:flex;align-items:center;gap:22px}
+.head svg{position:static;flex:none}
+h1{margin:0;font-weight:800;letter-spacing:-.025em;line-height:1.02}
+.tag{font-size:37px;line-height:1.3;font-weight:500;margin:14px 0 0;max-width:1060px}
+.meta{font-size:34px;line-height:1.32;font-weight:600;color:var(--dim);margin:10px 0 0}
+.screen{position:relative;background:#16181d;outline:3px solid var(--white);overflow:hidden}
+.screen img{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* wide: screen across, the clip's timeline under it, one caption at a time */
+.wide .screen{margin-top:30px;width:1088px}
+.wide .route{position:relative;height:104px;margin-top:20px}
+.wide .route svg{width:1088px;height:40px}
+.cap{position:absolute;left:0;top:52px;font-size:36px;font-weight:700;white-space:nowrap}
+.cap i{font-style:normal;color:var(--dim);font-weight:600;margin-right:14px}
+/* side: text and a vertical line of stops on the left, screen on the right */
+.side{display:flex;gap:48px;align-items:flex-start}
+.side .l{flex:1;min-width:0}
+.side .screen{flex:none;margin-top:8px}
+.stops{position:relative;margin-top:34px;padding-left:46px}
+.stops svg{left:0;top:0;width:40px;height:100%}
+.stop{font-size:34px;line-height:1.22;font-weight:700;padding:0 0 24px}
+.stop:last-child{padding-bottom:0}
+</style>
+<div id="stage"></div>
+<script src="colors.js"></script><script src="lib.js"></script><script src="films.js"></script>
+<script>
+// film.html?id=<id>: real footage in a platform-screen frame, with a train riding the clip's own timeline.
+const id = Q.get('id') || 'vel', F = window.FILMS[id]; F.colour = colourOf(F.key, 'work'); const FPS = 20, N = F.n, T = N / FPS * 1000, START = Math.round(N * (F.offset || 0));
+const fill = s => s;
+const side = F.layout === 'side', fs = side ? (F.title.length <= 8 ? 104 : 62) : Math.min(132, 1010 / Math.max(3, F.title.length) * 1.75);
+const r = Math.max(15, fs * .2);
+const head = `${F.kicker ? `<div class="kick">${F.kicker}</div>` : ''}<div class="head">${F.key ? `<svg width="${r * 2.5}" height="${r * 2.5}" id="bul"></svg>` : ''}<h1 style="font-size:${fs}px">${F.title}</h1></div>
+  <p class="tag">${F.tagline}</p><p class="meta">${fill(F.meta || '')}</p>`;
+const sw = side ? F.screenW : 1088, sh = Math.round(sw * F.crop[3] / F.crop[2]);
+const screen = `<div class="screen" style="width:${sw}px;height:${sh}px"><img id="fa"></div>`;
+stage.className = side ? 'side' : 'wide';
+stage.innerHTML = side ? `<div class="l">${head}<div class="stops"><svg id="rt"></svg>${F.chapters.map(c => `<div class="stop">${c[1]}</div>`).join('')}</div></div>${screen}`
+                       : `${head}${screen}<div class="route"><svg id="rt" viewBox="0 0 1088 40"></svg><div class="cap" id="cap"></div></div>`;
+if (F.key) bullet(bul, r * 1.25, r * 1.25, r, F.key, F.colour);
+const src = i => `.cache/${id}/f_${String(i + 1).padStart(3, '0')}.jpg`;
+window.__ready = Promise.all(Array.from({ length: N }, (_, i) => new Promise(res => { const im = new Image(); im.onload = im.onerror = res; im.src = src(i); })));
+const frac = s => (s - F.start) / (F.end - F.start), TR = F.colour === WHITE ? INK : INK;
+let stops, train, place;
+if (side) {
+  const box = document.querySelector('.stops'), rows = [...box.querySelectorAll('.stop')], H = box.getBoundingClientRect().height, top = box.getBoundingClientRect().top;
+  rt.setAttribute('viewBox', `0 0 40 ${H}`);
+  const ys = rows.map(e => e.getBoundingClientRect().top - top + 20), y0 = 0, y1 = H;
+  el('line', { x1: 14, x2: 14, y1: y0, y2: y1, stroke: F.colour, 'stroke-width': 15 }, rt);
+  stops = F.chapters.map((c, i) => ({ s: c[0], pos: ys[i], row: rows[i], dot: el('circle', { cx: 14, cy: ys[i], r: 4.8, fill: INK }, rt) }));
+  train = el('line', { x1: 14, x2: 14, stroke: TR, 'stroke-width': 7, 'stroke-linecap': 'round' }, rt);
+  // the train's position is piecewise between stops, so it reaches each stop exactly when its chapter starts
+  place = s => { const k = [...stops.map(v => [v.s, v.pos]), [F.end, y1 - 6]]; let p = k[0][1];
+    for (let i = 0; i < k.length - 1; i++) if (s >= k[i][0]) p = k[i][1] + (k[i + 1][1] - k[i][1]) * cl((s - k[i][0]) / (k[i + 1][0] - k[i][0]));
+    train.setAttribute('y1', Math.max(6, p - 30)); train.setAttribute('y2', Math.max(6.01, p)); };
+} else {
+  const X0 = 0, X1 = 1088, Y = 20;
+  el('line', { x1: X0, x2: X1, y1: Y, y2: Y, stroke: F.colour, 'stroke-width': 15 }, rt);
+  for (const x of [X0 + 3, X1 - 3]) el('line', { x1: x, x2: x, y1: Y - 13, y2: Y + 13, stroke: F.colour, 'stroke-width': 6 }, rt);
+  stops = F.chapters.map(c => { const x = 26 + frac(c[0]) * (X1 - 52); return { s: c[0], pos: x, dot: el('circle', { cx: x, cy: Y, r: 4.8, fill: INK }, rt) }; });
+  train = el('line', { y1: Y, y2: Y, stroke: TR, 'stroke-width': 7, 'stroke-linecap': 'round' }, rt);
+  place = s => { const x = 26 + frac(s) * (X1 - 52); train.setAttribute('x1', Math.max(12, x - 34)); train.setAttribute('x2', Math.max(12.01, x)); };
+}
+window.__seek = ms => {
+  const f = Math.floor((((ms % T) + T) % T) / 1000 * FPS + 1e-6), i = (f + START) % N;
+  fa.src = src(i);
+  const k = !START ? 0 : i >= N - 4 ? (i - (N - 5)) / 5 : i < 4 ? 1 - (i + 1) / 5 : 0;   // soften a mid-loop cut where the clip wraps; frame 0 is always clean
+  fa.style.opacity = 1 - k * .9; train.style.opacity = 1 - k;
+  const s = F.start + i / FPS * F.speed; place(s);
+  let cur = 0; stops.forEach((st, j) => { if (s >= st.s) cur = j; });
+  stops.forEach((st, j) => { const dt = (s - st.s) / F.speed, ring = dt > 0 && dt < .6 ? oq(1 - dt / .6) : 0;
+    st.dot.setAttribute('r', 4.8 * (1 + .8 * ring)); if (st.row) st.row.style.opacity = j === cur ? 1 : .45; });
+  if (!side) { const st = stops[cur], dt = (s - st.s) / F.speed, a = f < 2 ? 1 : oq(cl(dt / .28));
+    cap.innerHTML = `<i>${cur + 1} of ${stops.length}</i>${F.chapters[cur][1]}`; cap.style.opacity = .25 + .75 * a; cap.style.transform = `translateY(${(1 - a) * 8}px)`; }
+};
+window.__seek(0);
+</script>

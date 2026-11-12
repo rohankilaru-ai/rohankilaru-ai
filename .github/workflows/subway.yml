@@ -1,0 +1,56 @@
+name: subway map
+on:
+  schedule:
+    - cron: "17 9 * * *"     # every morning
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  map:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: needs PROFILE_TOKEN
+        id: token
+        env: { T: "${{ secrets.PROFILE_TOKEN }}" }
+        run: if [ -n "$T" ]; then echo "ok=1" >> "$GITHUB_OUTPUT"; else echo "no PROFILE_TOKEN secret, nothing to redraw"; fi
+      - uses: actions/setup-python@v5
+        if: steps.token.outputs.ok
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        if: steps.token.outputs.ok
+        with: { node-version: "22" }
+      - name: tools
+        if: steps.token.outputs.ok
+        run: |
+          pip install pillow
+          npm install --prefix profile/subway --no-save playwright@1.62.1
+          npx --prefix profile/subway playwright install --with-deps chromium
+      - name: fetch commits (a new public repo gets its own line)
+        if: steps.token.outputs.ok
+        env:
+          PROFILE_TOKEN: ${{ secrets.PROFILE_TOKEN }}   # fine-grained token of yours: read access to your repos, so VEL counts
+        run: python profile/lines.py
+      - name: redraw the map and the station signs
+        if: steps.token.outputs.ok
+        run: |
+          bash profile/subway/render.sh --daily
+          python profile/lines.py --readme
+      - name: publish the map to the subway-daily branch (force-pushed, so history stays one commit)
+        if: steps.token.outputs.ok
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          d=$(mktemp -d)
+          cp assets/subway/log.webp assets/subway/lane-*.png assets/subway/sign-*.png "$d"/
+          cd "$d"
+          git init -q -b subway-daily
+          git -c user.name="subway bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" add .
+          git -c user.name="subway bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "subway map $(date -u +%F)"
+          git push -qf "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" subway-daily
+      - name: commit the data and the README order if they changed
+        if: steps.token.outputs.ok
+        run: |
+          git config user.name "subway bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add profile/data/ledger.json README.md
+          if ! git diff --cached --quiet; then git commit -m "subway map: daily numbers" && git push; fi

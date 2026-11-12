@@ -1,0 +1,42 @@
+<!doctype html><meta charset="utf8"><link rel="stylesheet" href="sign.css">
+<style>#stage{height:232px}#stage::before{display:none}</style>
+<div id="stage"><svg id="s" width="1200" height="232" viewBox="0 0 1200 232"></svg></div>
+<script src="colors.js"></script><script src="lib.js"></script><script src="data.js"></script>
+<script>
+// one project's entry under the map: lane.html?key=<key>. Everything comes from data.js.
+// each lane is a stop: its line runs top to bottom at the left, so stacked lanes read as stops along one line,
+// and the stop itself is what you click (github puts its disclosure triangle beside it).
+// a past-work stop (lane.html?key=<work key>): same stop, muted colour, the role where the year strip would be
+const WK = (window.DATA.work || []).find(w => w.key === Q.get('key'));
+if (WK) { const svg = document.getElementById('s'), c = colourOf(WK.color_key || WK.key, 'work'), tx = (s, a) => { const t = el('text', a, svg); t.textContent = s; };
+  el('line', { x1: 30, x2: 30, y1: 0, y2: 232, stroke: c, 'stroke-width': 15 }, svg);
+  el('circle', { cx: 30, cy: 116, r: 14.5, fill: WHITE }, svg); el('circle', { cx: 30, cy: 116, r: 5.2, fill: INK }, svg);
+  tx(WK.name.toLowerCase(), { x: 84, y: 96, 'font-size': 54, 'font-weight': 800, fill: WHITE, 'letter-spacing': '-.015em' });
+  tx(WK.line, { x: 84, y: 154, 'font-size': 34, 'font-weight': 500, fill: WHITE, 'fill-opacity': .86 });
+  tx(WK.role, { x: 84, y: 204, 'font-size': 34, 'font-weight': 600, fill: DIM });
+}
+if (!WK) (() => {                                         // a project or retired lane
+const D = window.DATA, key = Q.get('key'), faded = D.retired.some(x => x.key === key), l = [...D.lines, ...D.retired].find(x => x.key === key) || D.lines[0], svg = document.getElementById('s');
+// a retired project keeps the lane design, greyed: no line colour, no count, just when it last ran
+const c = faded ? window.PALETTE.retired : colours(D.lines)[l.key], INKED = faded ? '#b4b4ae' : WHITE, SOFT = faded ? '#7e7f7b' : DIM;
+const text = (s, a) => { const t = el('text', a, svg); t.textContent = s; return t; };
+el('line', { x1: 30, x2: 30, y1: 0, y2: 232, stroke: c, 'stroke-width': l.key === 'vel' && !faded ? 21 : 15 }, svg);
+el('circle', { cx: 30, cy: 116, r: 14.5, fill: faded ? '#b4b4ae' : WHITE }, svg); el('circle', { cx: 30, cy: 116, r: 5.2, fill: INK }, svg);
+text(l.name, { x: 84, y: 96, 'font-size': 54, 'font-weight': 800, fill: INKED, 'letter-spacing': '-.015em' });
+const yr = l.last_year && l.last_year !== D.end_year ? ' ' + l.last_year : '';
+text(faded ? `last commit ${l.last_month}` : l.commits ? `${fmtN(l.commits)} commit${l.commits === 1 ? '' : 's'}, last ${l.last}${yr}` : `no commits this year, last ${l.last}${yr}`,
+  { x: 1144, y: 94, 'font-size': 34, 'font-weight': 600, fill: SOFT, 'text-anchor': 'end' });
+// what it is, cut at a word if it would run into the cue
+let what = (l.what || '').replace(/\.$/, ''); const wt = text(what, { x: 84, y: 162, 'font-size': 34, 'font-weight': 500, fill: faded ? SOFT : WHITE, 'fill-opacity': faded ? 1 : .86 });
+const room = 1144 - 84;
+while (wt.getComputedTextLength() > room && what.includes(' ')) { what = what.slice(0, what.lastIndexOf(' ')); wt.textContent = what.replace(/[,.;:]$/, '') + ' …'; }
+// its year as a strip: every week of the window in order, a dot for each week with commits
+const X0 = 86, X1 = 1142, Y = 206, x = w => X0 + (w + .5) / D.nweeks * (X1 - X0);
+el('line', { x1: X0, x2: X1, y1: Y, y2: Y, stroke: c, 'stroke-opacity': faded ? .34 : .3, 'stroke-width': 11, ...(l.stops.length ? {} : { 'stroke-dasharray': '11 9' }) }, svg);
+if (l.stops.length) {
+  const a = x(l.stops[0].week) - 9, b = l.running ? X1 : x(l.stops[l.stops.length - 1].week) + 9;
+  el('line', { x1: Math.max(X0, a), x2: Math.min(X1, b), y1: Y, y2: Y, stroke: c, 'stroke-width': 11 }, svg);
+  for (const s of l.stops) el('circle', { cx: x(s.week), cy: Y, r: 3.3, fill: INK }, svg);
+}
+})();
+</script>

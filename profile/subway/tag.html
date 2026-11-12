@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf8"><link rel="stylesheet" href="sign.css">
+<style>
+#stage{width:640px;height:132px}
+#stage::before{top:12px;height:4px}
+.t{position:absolute;left:116px;top:39px;font-size:58px;font-weight:800;letter-spacing:-.02em;line-height:1;white-space:nowrap}
+.u{position:absolute;right:28px;top:60px;font-size:30px;font-weight:500;color:var(--dim);line-height:1}
+</style>
+<div id="stage">
+ <div class="t" id="t"></div><div class="u" id="u"></div>
+ <svg width="640" height="132" viewBox="0 0 640 132">
+  <clipPath id="c"><circle cx="64" cy="74" r="33"/></clipPath>
+  <circle cx="64" cy="74" r="33" fill="#f5f4ef"/>
+  <g clip-path="url(#c)"><g id="a1"><path d="M50 88 L78 60 M56 59 H79 V82" fill="none" stroke="#0d0d0e" stroke-width="8"/></g>
+  <g id="a2"><path d="M50 88 L78 60 M56 59 H79 V82" fill="none" stroke="#0d0d0e" stroke-width="8"/></g></g>
+ </svg>
+</div>
+<script>
+// a small link tag: tag.html?t=<big text>&u=<small text>. the exit arrow leaves up-right and the next one arrives from down-left
+const q = new URLSearchParams(location.search); t.textContent = q.get('t') || ''; u.textContent = q.get('u') || '';
+// icon=star swaps the arrow for a five-point star (the "star on github" tag)
+if (q.get('icon') === 'star') { a1.remove(); a2.remove();
+  const p = Array.from({ length: 10 }, (_, i) => { const r = i % 2 ? 9.6 : 23, an = -Math.PI / 2 + i * Math.PI / 5; return `${64 + r * Math.cos(an)},${75.5 + r * Math.sin(an)}`; }).join(' ');
+  const st = document.createElementNS('http://www.w3.org/2000/svg', 'polygon'); st.setAttribute('points', p); st.setAttribute('fill', '#0d0d0e'); document.querySelector('svg').appendChild(st); }
+const T = 5000, cl = v => Math.max(0, Math.min(1, v)), io = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+window.__seek = ms => { if (!document.getElementById('a1')) return; const tt = ((ms % T) + T) % T, k = io(cl((tt - 1700) / 900)) * 70;
+  a1.setAttribute('transform', `translate(${k} ${-k})`); a2.setAttribute('transform', `translate(${k - 70} ${70 - k})`); };
+window.__seek(0);
+</script>

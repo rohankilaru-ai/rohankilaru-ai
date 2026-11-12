@@ -1,0 +1,40 @@
+// the film cards. times are seconds in the source clip; copy is from the owner's resume and repo READMEs.
+// nothing here changes daily: live numbers belong to the map and the lanes.
+// colour comes from colors.js by key (vel, lea: building now; climate-plans, ariento: past work, muted).
+// frames = (end - start) / speed * 20 fps, extracted by footage.sh into .cache/<id>/
+window.FILMS = {
+  'vel': { title: 'vel', key: 'vel', layout: 'wide',
+    tagline: 'an ai tutor that draws on your screen while it explains.',
+    meta: 'private repo, prototype footage.',
+    src: '~/Movies/VEL/moodboard/mini-agents-explain.mp4', start: 0.8, end: 17.6, speed: 2, crop: [190, 150, 1240, 775], offset: .46,
+    chapters: [[0.8, 'you ask: explain this page'], [4.3, 'vel splits into three mini agents'], [6, 'each one circles its part and explains it'], [9.8, 'one moves on to your lab data'], [13.2, 'they merge back and offer a note sheet']] },
+  'lea': { title: 'lea', key: 'lea', layout: 'side', screenW: 388,
+    tagline: "scan a device with your iphone, ask what's wrong, and see the broken part circled on the 3d model.",
+    meta: 'cal hacks. team build with @SritejBommaraju, @samikthusoo29 and @jynlee7.',
+    src: '~/Movies/LEA/lea-demo.gif', start: 0, end: 12, speed: 1.5, crop: [0, 0, 720, 1280], offset: 0,
+    chapters: [[0, 'circles the part the scan flagged'], [4, 'explains it in plain words'], [10.5, 'spins the 3d model to the bent pins']] },
+  'cp-equity': { title: 'climate equity index', key: 'climate-plans', layout: 'wide',
+    kicker: 'climate plans, uc berkeley coolclimate network',
+    tagline: 'how every california city ranks on climate burdens and benefits. live on climateplans.org.',
+    meta: 'software development intern, jan to may 2026.',
+    src: '~/Movies/Work/climateplans-equity.mp4', start: 0, end: 9, speed: 1.2, crop: [0, 0, 1600, 1000], offset: 0,
+    chapters: [[0, "berkeley's score among 459 california cities"], [2.5, 'opens the burdens: emissions, pollution, health'], [5.1, 'then the benefits: equity, mobility, community']] },
+  'cp-before-after': { title: 'law impact: before and after', key: 'climate-plans', layout: 'side', screenW: 560,
+    kicker: 'climate plans, uc berkeley coolclimate network',
+    tagline: 'pick a law and see how each metric moved before and after it took effect.',
+    meta: 'software development intern, jan to may 2026.',
+    src: '~/Movies/Work/law-before-after.mp4', start: 1.6, end: 14.6, speed: 1.7, crop: [500, 0, 1050, 1000], offset: 0,
+    chapters: [[1.6, "pick a law: berkeley's 2019 gas ban"], [5.1, 'pre vs post average for each metric'], [8.7, "open one metric's trend"], [10.2, 'blue before, red after it took effect']] },
+  'cp-similar': { title: 'law impact: similar laws', key: 'climate-plans', layout: 'side', screenW: 540,
+    kicker: 'climate plans, uc berkeley coolclimate network',
+    tagline: 'open a local policy and get the closest matches from other cities, ready to compare side by side.',
+    meta: 'software development intern, jan to may 2026.',
+    src: '~/Movies/Work/law-similar.mp4', start: 1.5, end: 12, speed: 1.4, crop: [640, 0, 960, 1000], offset: 0,
+    chapters: [[1.5, "open berkeley's waste code"], [5.2, 'closest matches from other cities'], [9.4, 'pick a few to compare side by side']] },
+  'ariento': { title: 'ariento', key: 'ariento', layout: 'wide',
+    tagline: 'the backend behind their crm: django apis and a task queue that keeps five services in sync.',
+    meta: 'software engineer intern, summer 2026. private repo, so this is a diagram.',
+    src: '~/Movies/Work/ariento-backend.mp4', start: 0, end: 10.5, speed: 1.3, crop: [0, 0, 1600, 1000], offset: 0,
+    chapters: [[0, 'a client changes in the crm'], [1.6, 'the django rest api takes the request'], [3.6, 'cloud tasks queue the slow work'], [4.9, 'five services stay in sync'], [7.0, 'fewer sync errors, 50 cloud task endpoints under ci']] },
+};
+for (const f of Object.values(window.FILMS)) { f.n = Math.round((f.end - f.start) / f.speed * 20); f.secs = f.n / 20; }

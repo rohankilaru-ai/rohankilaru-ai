@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf8"><link rel="stylesheet" href="sign.css">
+<style>#stage{height:156px}</style>
+<div id="stage"><svg id="s" width="1200" height="156" viewBox="0 0 1200 156"></svg></div>
+<script src="colors.js"></script><script src="lib.js"></script><script src="data.js"></script>
+<script>
+// a section sign: sign.html?t=building+now&keys=@now   keys = the lines that stop here, shown as bullets:
+// @now / @side take the map's tiers from data.js, or name keys directly. @work = the past-work stops. every sign ends in an outlined chevron: each one is the summary of a dropdown.
+const svg = document.getElementById('s'), C = colours(window.DATA.lines);
+const t = el('text', { x: 56, y: 118, 'font-size': 84, 'font-weight': 800, fill: WHITE, 'letter-spacing': '-.02em' }, svg); t.textContent = Q.get('t') || '';
+let x = 1118;
+{ el('circle', { cx: x, cy: 92, r: 26, fill: 'none', stroke: WHITE, 'stroke-width': 4 }, svg); el('path', { d: `M${x - 11} ${92 - 4} L${x} ${92 + 8} L${x + 11} ${92 - 4}`, fill: 'none', stroke: WHITE, 'stroke-width': 5 }, svg); }
+x -= 62;
+const L = window.DATA.lines;
+let keys = Q.get('keys') || ''; if (keys === '@now') keys = L.filter(isNow).map(l => l.key).join(','); if (keys === '@side') keys = L.filter(l => !isNow(l)).map(l => l.key).join(',');
+const WORK = {}; for (const w of (window.DATA.work || [])) WORK[w.key] = colourOf(w.color_key || w.key, 'work'); if (keys === '@work') keys = Object.keys(WORK).join(',');
+for (const k of keys.split(',').filter(Boolean).reverse()) { bullet(svg, x, 92, 22, k, k === 'retired' ? window.PALETTE.retired : WORK[k] || C[k] || '#ccc'); x -= 54; }
+</script>

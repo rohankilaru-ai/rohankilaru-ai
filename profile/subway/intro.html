@@ -1,0 +1,75 @@
+<!doctype html><meta charset="utf8"><link rel="stylesheet" href="sign.css">
+<style>
+h1{position:absolute;left:54px;top:58px;margin:0;font-size:132px;font-weight:800;letter-spacing:-.025em;line-height:1}
+p{position:absolute;left:58px;top:212px;width:1090px;margin:0;font-size:35.5px;line-height:1.36;font-weight:500;letter-spacing:-.004em}
+p b{font-weight:800}
+</style>
+<div id="stage">
+ <h1>hi, i'm rohan.</h1>
+ <p>data science + econ at uc berkeley, cs minor. i've shipped at ariento, underdog, climate plans and whoosh. right now i'm building <b>VEL</b>, an ai tutor that draws on your screen while it explains.</p>
+ <svg id="map" width="1200" height="626"></svg>
+</div>
+<script src="colors.js"></script><script src="lib.js"></script>
+<script>
+// The route under the intro: the stops, then a junction where the line splits into what is being built now.
+// To add a branch later, add its key here (1 to 4 branches fan out on their own). Colours come from colors.js.
+const INTRO_BRANCHES = ['vel', 'lea'];
+// the stops, in the order the owner gave
+const STOPS = [['uc berkeley', 50], ['whoosh', 262], ['climate plans', 420], ['underdog', 684], ['ariento', 870]];
+
+const svg = document.getElementById('map'), n = INTRO_BRANCHES.length, S = 78;
+const B = Math.max(488, 426 + (n - 1) / 2 * S), LOW = B + 52, JX = 1000;          // upper trunk level, lower trunk level, junction x
+const H = Math.max(626, Math.ceil(B + (n - 1) / 2 * S + 58 + 44));
+stage.style.height = H + 'px'; svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 1200 ${H}`);
+const pt = (x, y) => ({ x, y });
+const trunk = el('path', { d: rounded([pt(-20, LOW), pt(610, LOW), pt(662, B), pt(JX, B)], 20), fill: 'none', stroke: WHITE, 'stroke-width': 15 }, svg);
+const Lt = trunk.getTotalLength();
+// branches: each leaves the junction on a 45-degree run to its own level, then heads off the right edge
+const branches = INTRO_BRANCHES.map((key, k) => {
+  const dy = (k - (n - 1) / 2) * S, c = colourOf(key, 'now'), w = key === 'vel' ? 21 : 15, mx = JX + (n - 1) / 2 * S + 90;
+  const pts = Math.abs(dy) < 1 ? [pt(JX, B), pt(1220, B)] : [pt(JX, B), pt(JX + Math.abs(dy), B + dy), pt(1220, B + dy)];
+  const path = el('path', { d: rounded(pts, 20), fill: 'none', stroke: c, 'stroke-width': w, 'stroke-linejoin': 'round' }, svg);
+  return { key, c, path, len: path.getTotalLength(), mx: Math.min(1130, mx), my: B + dy };
+});
+// the junction: a white plate where the trunk hands over
+const plate = el('line', { x1: JX, x2: JX, y1: B - 15, y2: B + 15, stroke: WHITE, 'stroke-width': 13, 'stroke-linecap': 'round' }, svg);
+const trains = [el('path', { d: trunk.getAttribute('d'), fill: 'none', stroke: INK, 'stroke-width': 7, 'stroke-linecap': 'round' }, svg),
+  ...branches.map(b => el('path', { d: b.path.getAttribute('d'), fill: 'none', stroke: INK, 'stroke-width': 7, 'stroke-linecap': 'round' }, svg))];
+const nearest = (path, len, x, y) => { let b = 0, bd = 1e9; for (let s = 0; s <= len; s += 1) { const q = path.getPointAtLength(s), d = (q.x - x) ** 2 + (q.y - y) ** 2; if (d < bd) { bd = d; b = s; } } return b; };
+// stations on the trunk, then one terminal marker per branch; "at" is the distance from the start of the route
+const marks = STOPS.map(([name, x]) => { const y = x < 636 ? LOW : B;
+  const dot = el('circle', { cx: x, cy: y, r: 4.8, fill: INK }, svg);
+  const t = el('text', { x: x - 6, y: y + 58, 'font-size': 34, 'font-weight': 600, fill: WHITE }, svg); t.textContent = name;
+  return { x, y, dot, t, at: nearest(trunk, Lt, x, y), grow: .8 }; });
+for (const b of branches) {
+  const g = el('g', {}, svg);
+  if (b.key === 'vel') el('rect', { x: -13, y: -13, width: 26, height: 26, fill: WHITE, stroke: INK, 'stroke-width': 5, transform: 'rotate(45)' }, g);
+  else el('circle', { r: 9.5, fill: WHITE, stroke: INK, 'stroke-width': 4.5 }, g);
+  const t = el('text', { x: b.mx, y: b.my + 58, 'font-size': 40, 'font-weight': 800, fill: b.c, 'text-anchor': 'middle' }, svg); t.textContent = b.key; const tw = t.getComputedTextLength(); if (b.mx + tw / 2 > 1186) t.setAttribute('x', 1186 - tw / 2);
+  marks.push({ x: b.mx, y: b.my, dot: g, t, at: Lt + nearest(b.path, b.len, b.mx, b.my), grow: .24, group: true });
+}
+const TOTAL = Lt + Math.max(...branches.map(b => b.len));
+// time: a train runs the route and splits at the junction; then the route retracts and draws itself back in, branches together
+const T = 7000, RUN0 = 300, OUT0 = 4750, OUT1 = 5300, IN0 = 5450, IN1 = 6850, SPEED = (TOTAL + 60) / (OUT0 - RUN0 - 250), TL = 34;
+window.__seek = ms => {
+  const t = ((ms % T) + T) % T;
+  let a = 0, b = TOTAL;
+  if (t >= OUT0 && t < IN0) a = io(cl((t - OUT0) / (OUT1 - OUT0))) * TOTAL;
+  if (t >= IN0) b = io(cl((t - IN0) / (IN1 - IN0))) * TOTAL;
+  span(trunk, Math.min(a, Lt), Math.min(b, Lt), Lt);
+  for (const br of branches) span(br.path, cl(a - Lt, 0, br.len), cl(b - Lt, 0, br.len), br.len);
+  plate.style.opacity = a <= Lt && b >= Lt ? 1 : 0; plate.setAttribute('transform', `translate(${JX} ${B}) scale(1 ${b >= Lt ? back(cl((b - Lt) / 40)) : 0}) translate(${-JX} ${-B})`);
+  const head = (t - RUN0) * SPEED, tail = head - TL, on = t < OUT0;
+  const show = (e, lo, hi, len) => { if (on && hi > 0 && lo < len) span(e, Math.max(0, lo), Math.min(hi, len), len); else e.style.opacity = 0; };
+  show(trains[0], tail, head, Lt);
+  branches.forEach((br, i) => show(trains[i + 1], tail - Lt, head - Lt, br.len));
+  for (const m of marks) {
+    let sc = m.at >= a - 1 && m.at <= b + 1 ? 1 : 0, op = sc, dy = 0;
+    if (t >= IN0 && sc) { const k = cl((b - m.at) / 46); sc = back(k); op = cl(k * 2); dy = (1 - oq(k)) * 8; }
+    const dt = (head - m.at) / SPEED, ring = on && dt > 0 && dt < 460 ? oq(1 - dt / 460) : 0, k = sc * (1 + m.grow * ring);
+    m.dot.setAttribute('transform', m.group ? `translate(${m.x} ${m.y}) scale(${k})` : `translate(${m.x} ${m.y}) scale(${k}) translate(${-m.x} ${-m.y})`);
+    m.t.style.opacity = op; m.t.setAttribute('transform', `translate(0 ${dy - 4 * ring})`);
+  }
+};
+window.__seek(0);
+</script>

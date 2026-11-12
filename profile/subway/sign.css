@@ -1,0 +1,7 @@
+@font-face{font-family:'Overpass';font-style:normal;font-weight:100 900;font-display:block;src:url(fonts/Overpass-latin.woff2) format('woff2')}
+:root{--ink:#0d0d0e;--white:#f5f4ef;--dim:#a3a39d;--rule:#f5f4ef;--vel:#ffc400}
+html,body{margin:0;background:transparent}
+#stage{position:relative;width:1200px;background:var(--ink);color:var(--white);font-family:'Overpass',sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+#stage::before{content:"";position:absolute;left:0;right:0;top:22px;height:6px;background:var(--rule);z-index:3}
+svg{position:absolute;left:0;top:0}
+svg text{font-family:'Overpass',sans-serif}

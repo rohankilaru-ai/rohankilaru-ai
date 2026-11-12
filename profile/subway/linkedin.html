@@ -1,0 +1,24 @@
+<!doctype html><meta charset="utf8"><link rel="stylesheet" href="sign.css">
+<style>
+#stage{width:640px;height:132px}
+#stage::before{top:12px;height:4px}
+.t{position:absolute;left:116px;top:39px;font-size:58px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.u{position:absolute;right:28px;top:60px;font-size:30px;font-weight:500;color:var(--dim);line-height:1}
+svg{position:absolute;left:0;top:0}
+</style>
+<div id="stage">
+ <div class="t">linkedin</div><div class="u">in/rohankilaru</div>
+ <svg width="640" height="132" viewBox="0 0 640 132">
+  <clipPath id="c"><circle cx="64" cy="74" r="33"/></clipPath>
+  <circle cx="64" cy="74" r="33" fill="#f5f4ef"/>
+  <g clip-path="url(#c)"><g id="a1"><path d="M50 88 L78 60 M56 59 H79 V82" fill="none" stroke="#0d0d0e" stroke-width="8"/></g>
+  <g id="a2"><path d="M50 88 L78 60 M56 59 H79 V82" fill="none" stroke="#0d0d0e" stroke-width="8"/></g></g>
+ </svg>
+</div>
+<script>
+// the exit arrow leaves up-right along 45 degrees and the next one arrives from down-left
+const T = 5000, cl = v => Math.max(0, Math.min(1, v)), io = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+window.__seek = ms => { const t = ((ms % T) + T) % T, k = io(cl((t - 1700) / 900)) * 70;
+  a1.setAttribute('transform', `translate(${k} ${-k})`); a2.setAttribute('transform', `translate(${k - 70} ${70 - k})`); };
+window.__seek(0);
+</script>
