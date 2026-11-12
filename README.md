@@ -8,10 +8,10 @@
 <img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/log.webp" width="100%" alt="Practice log as a subway map: every project is a line, every week with commits is a station, most recent work on the right">
 
 <a name="building-now"></a>
-<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/sign-building.png" width="95%" alt="building now"></picture></summary>
+<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/sign-building.png" width="95%" align="middle" alt="building now"></picture></summary>
 
 <a name="vel"></a>
-<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-vel.png" width="94%" alt="VEL: ai tutor that draws on your screen. 2,303 commits this year, last 2026-11-11. Click to open."></picture></summary>
+<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-vel.png" width="94%" align="middle" alt="VEL: ai tutor that draws on your screen. 2,303 commits this year, last 2026-11-11. Click to open."></picture></summary>
 
 <img src="assets/subway/vel.webp" width="94%" alt="VEL: asked about a Calvin cycle page, it sends out mini agents that circle the diagram, the word rubisco and the lab data, then their notes land on the page">
 
@@ -20,7 +20,7 @@
 </details>
 
 <a name="lea"></a>
-<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-lea.png" width="94%" alt="LEA: phone scan to a repair guide. 124 commits this year, last 2026-11-10. Click to open."></picture></summary>
+<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-lea.png" width="94%" align="middle" alt="LEA: phone scan to a repair guide. 124 commits this year, last 2026-11-10. Click to open."></picture></summary>
 
 <img src="assets/subway/lea.webp" width="94%" alt="LEA: an iPhone LiDAR scan of an Arduino becomes a 3D model, and Lea circles the bent pin header">
 
@@ -33,10 +33,10 @@
 </details>
 
 <a name="side-projects"></a>
-<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/sign-side.png" width="95%" alt="side projects"></picture></summary>
+<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/sign-side.png" width="95%" align="middle" alt="side projects"></picture></summary>
 
 <a name="jobradar-ai"></a>
-<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-jobradar-ai.png" width="94%" alt="JobRadar: internship alerts, 24/7. 84 commits this year, last 2026-10-04. Click to open."></picture></summary>
+<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-jobradar-ai.png" width="94%" align="middle" alt="JobRadar: internship alerts, 24/7. 84 commits this year, last 2026-10-04. Click to open."></picture></summary>
 
 <img src="assets/subway/card-jobradar-ai.webp" width="94%" alt="JobRadar details">
 
@@ -45,7 +45,7 @@
 </details>
 
 <a name="dailygames-slackbot"></a>
-<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-dailygames-slackbot.png" width="94%" alt="SportsGrid: daily puzzles + leaderboards in slack. 23 commits this year, last 2026-09-11. Click to open."></picture></summary>
+<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-dailygames-slackbot.png" width="94%" align="middle" alt="SportsGrid: daily puzzles + leaderboards in slack. 23 commits this year, last 2026-09-11. Click to open."></picture></summary>
 
 <img src="assets/subway/card-dailygames-slackbot.webp" width="94%" alt="SportsGrid details">
 
@@ -56,10 +56,10 @@
 </details>
 
 <a name="past-projects"></a>
-<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/sign-projects.png" width="95%" alt="past projects: click to open"></picture></summary>
+<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/sign-projects.png" width="95%" align="middle" alt="past projects: click to open"></picture></summary>
 
 <a name="kalshi-ev-extension"></a>
-<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-kalshi-ev-extension.png" width="94%" alt="Kalshi EV: kalshi vs sportsbook, in chrome. 1 commit this year, last 2026-01-31. Click to open."></picture></summary>
+<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-kalshi-ev-extension.png" width="94%" align="middle" alt="Kalshi EV: kalshi vs sportsbook, in chrome. 1 commit this year, last 2026-01-31. Click to open."></picture></summary>
 
 <img src="assets/subway/card-kalshi-ev-extension.webp" width="94%" alt="Kalshi EV details">
 
@@ -68,7 +68,7 @@
 </details>
 
 <a name="evision"></a>
-<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-evision.png" width="94%" alt="EVision: kalshi vs sportsbook, web app. 2 commits this year, last 2026-01-13. Click to open."></picture></summary>
+<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-evision.png" width="94%" align="middle" alt="EVision: kalshi vs sportsbook, web app. 2 commits this year, last 2026-01-13. Click to open."></picture></summary>
 
 <img src="assets/subway/card-evision.webp" width="94%" alt="EVision details">
 
@@ -77,7 +77,7 @@
 </details>
 
 <a name="rohan_drone_club"></a>
-<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-rohan_drone_club.png" width="94%" alt="Drone Stitcher: drone video into one panorama. 0 commits this year, last 2025-09-23. Click to open."></picture></summary>
+<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-rohan_drone_club.png" width="94%" align="middle" alt="Drone Stitcher: drone video into one panorama. 0 commits this year, last 2025-09-23. Click to open."></picture></summary>
 
 <img src="assets/subway/card-rohan_drone_club.webp" width="94%" alt="Drone Stitcher details">
 
@@ -90,10 +90,10 @@
 
 <!-- work:start -->
 <a name="past-work"></a>
-<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/sign-work.png" width="95%" alt="past work"></picture></summary>
+<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/sign-work.png" width="95%" align="middle" alt="past work"></picture></summary>
 
 <a name="climate-plans"></a>
-<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-climate-plans.png" width="94%" alt="climate plans: uc berkeley coolclimate network, software development intern, jan to may 2026. Click to open."></picture></summary>
+<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-climate-plans.png" width="94%" align="middle" alt="climate plans: uc berkeley coolclimate network, software development intern, jan to may 2026. Click to open."></picture></summary>
 
 <img src="assets/subway/cp-equity.webp" width="94%" alt="Climate Equity Index on climateplans.org: Berkeley&#x27;s burdens and benefits open into their indicators">
 
@@ -106,7 +106,7 @@
 </details>
 
 <a name="ariento"></a>
-<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-ariento.png" width="94%" alt="ariento: backend behind their crm, software engineer intern, summer 2026. Click to open."></picture></summary>
+<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-ariento.png" width="94%" align="middle" alt="ariento: backend behind their crm, software engineer intern, summer 2026. Click to open."></picture></summary>
 
 <img src="assets/subway/ariento.webp" width="94%" alt="Ariento CRM backend: Angular frontend, Django REST API and Cloud Tasks keeping outside services in sync">
 

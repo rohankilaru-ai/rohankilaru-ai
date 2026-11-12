@@ -180,11 +180,6 @@ if (gap) {
   const m = { x: (P1.x + P2.x) / 2 - K * maxRankL * LANE / 2, y: (P1.y + P2.y) / 2 + maxRankL * LANE / 2 }, hw = 52, L = 1400;
   el('rect', { x: 0, y: 214, width: 1200, height: H - 214 }, el('clipPath', { id: 'mapclip' }, gGround));
   el('polygon', { points: [[m.x - L - hw, m.y + L - hw], [m.x + L - hw, m.y - L - hw], [m.x + L + hw, m.y - L + hw], [m.x - L + hw, m.y + L + hw]].map(p => p.join(',')).join(' '), fill: '#172430', 'clip-path': 'url(#mapclip)' }, gGround);
-  const t = el('text', { 'font-size': 34, 'font-weight': 600, fill: '#7f9bb3' }, gGround); t.textContent = `these lines quiet ${gap.from} to ${gap.to}`;
-  const w = t.getComputedTextLength(); let ok = false;
-  for (const yy of [262, 304, 346, H - 40, H - 84]) { const x = Math.min(1144 - w, m.x + (m.y - yy) + hw + 26); const R = { x0: x - 6, x1: x + w + 6, y0: yy - 36, y1: yy + 12 };
-    if (x > 50 && !hitRect(R)) { t.setAttribute('x', x); t.setAttribute('y', yy); rects.push(R); ok = true; break; } }
-  if (!ok) t.remove();
 }
 { // busiest week, noted over its column when there is room
   const i = D.columns.findIndex(c => c.date === D.busiest.date);

@@ -174,7 +174,7 @@ def star(p):
 def section(sign, alt, open_):
     """a section sign is the summary of its own dropdown, so its arrow opens and closes the section;
     95% wide so GitHub's disclosure triangle sits beside it instead of on a line of its own"""
-    return (f'<details{" open" if open_ else ""}><summary><picture><img src="{daily(sign)}" width="95%" alt="{alt}">'
+    return (f'<details{" open" if open_ else ""}><summary><picture><img src="{daily(sign)}" width="95%" align="middle" alt="{alt}">'
             f'</picture></summary>\n')
 
 
@@ -183,7 +183,7 @@ def stop(p, data, body, open_=False):
     r = data["repos"][p["key"]]; n = len(r["dates"])
     alt = html.escape(f'{p["name"]}: {p["line"]}. {n:,} commit{"s" if n != 1 else ""} this year, last {r["last"] or "none"}. Click to open.')
     return [f'<a name="{p["key"]}"></a>',
-            f'<details{" open" if open_ else ""}><summary><picture><img src="{daily("lane-" + p["key"] + ".png")}" width="94%" alt="{alt}"></picture></summary>', '',
+            f'<details{" open" if open_ else ""}><summary><picture><img src="{daily("lane-" + p["key"] + ".png")}" width="94%" align="middle" alt="{alt}"></picture></summary>', '',
             *body, '</details>', '']
 
 
@@ -230,7 +230,7 @@ def work_block():
         for b in w["body"]:
             body += [f'<img src="{b["img"]}" width="94%" alt="{html.escape(b["alt"])}">' if "img" in b else b["text"], '']
         out += [f'<a name="{w["key"]}"></a>',
-                f'<details open><summary><picture><img src="{daily("lane-" + w["key"] + ".png")}" width="94%" '
+                f'<details open><summary><picture><img src="{daily("lane-" + w["key"] + ".png")}" width="94%" align="middle" '
                 f'alt="{html.escape(w["name"])}: {html.escape(w["line"])}, {html.escape(w["role"])}. Click to open."></picture></summary>', '',
                 *body, '</details>', '']
     out += ['</details>', '']
