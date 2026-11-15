@@ -11,7 +11,7 @@
 <details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/sign-building.png" width="95%" align="middle" alt="building now"></picture></summary>
 
 <a name="vel"></a>
-<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-vel.png" width="94%" align="middle" alt="VEL: ai tutor that draws on your screen. 2,436 commits this year, last 2026-11-13. Click to open."></picture></summary>
+<details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-vel.png" width="94%" align="middle" alt="VEL: ai tutor that draws on your screen. 2,437 commits this year, last 2026-11-15. Click to open."></picture></summary>
 
 <img src="assets/subway/vel.webp" width="94%" alt="VEL: asked about a Calvin cycle page, it sends out mini agents that circle the diagram, the word rubisco and the lab data, then their notes land on the page">
 
@@ -34,6 +34,13 @@
 
 <a name="side-projects"></a>
 <details open><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/sign-side.png" width="95%" align="middle" alt="side projects"></picture></summary>
+
+<a name="reach"></a>
+<details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-reach.png" width="94%" align="middle" alt="Reach: reach: a mac desktop assistant you type to. 194 commits this year, last 2026-11-14. Click to open."></picture></summary>
+
+**[Reach](https://github.com/rohankilaru-ai/Reach)**: reach: a mac desktop assistant you type to
+
+</details>
 
 <a name="jobradar-ai"></a>
 <details><summary><picture><img src="https://github.com/rohankilaru-ai/rohankilaru-ai/raw/subway-daily/lane-jobradar-ai.png" width="94%" align="middle" alt="JobRadar: internship alerts, 24/7. 84 commits this year, last 2026-10-04. Click to open."></picture></summary>
